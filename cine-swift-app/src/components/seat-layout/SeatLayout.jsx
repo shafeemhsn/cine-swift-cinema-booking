@@ -6,16 +6,15 @@ import { AdminPanel } from "./AdminPanel";
 import { SeatLegend } from "./SeatLegend,";
 import { generateInitialSeats } from "./seatUtils";
 
-function Cinema() {
+function SeatLayout() {
   const [seats, setSeats] = useState(() => generateInitialSeats());
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [bookingMode, setBookingMode] = useState("customer"); // 'customer' or 'admin'
+  const [bookingMode, setBookingMode] = useState("customer");
   const [groupSize, setGroupSize] = useState(0);
   const [ageRestriction, setAgeRestriction] = useState(false);
   const [seniorFlexible, setSeniorFlexible] = useState(false);
   const [isVip, setVip] = useState(false);
 
-  // Reset selections when group size changes
   useEffect(() => {
     setSelectedSeats([]);
   }, [groupSize, ageRestriction]);
@@ -134,7 +133,7 @@ function Cinema() {
         return [];
       }
     } else {
-      alert(`Please select an available seat`);
+      alert(`This seat is unavailable`);
     }
   };
 
@@ -273,4 +272,4 @@ function Cinema() {
   );
 }
 
-export default Cinema;
+export default SeatLayout;

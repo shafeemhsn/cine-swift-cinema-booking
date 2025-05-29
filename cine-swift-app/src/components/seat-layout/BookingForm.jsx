@@ -3,7 +3,6 @@ export const BookingForm = ({
   setGroupSize,
   selectedSeats,
   confirmBooking,
-
   ageRestriction,
   setAgeRestriction,
   seniorFlexible,

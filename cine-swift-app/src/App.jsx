@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./pages/Root";
 import MovieList from "./pages/MovieList";
-import Cinema from "./components/seating-v2/Cinema";
+import SeatLayout from "./components/seat-layout/SeatLayout";
 
 const router = createBrowserRouter([
   {
@@ -10,7 +10,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <MovieList /> },
 
-      { path: "cinema", element: <Cinema /> },
+      { path: "seat-layout", element: <SeatLayout /> },
     ],
   },
 ]);
