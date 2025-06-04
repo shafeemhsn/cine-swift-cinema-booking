@@ -11,7 +11,7 @@ const MovieCard = ({ movie }) => {
         <p className="text-sm text-gray-600">{movie.genre}</p>
         <p className="text-sm text-yellow-500 font-medium">⭐ {movie.rating}</p>
         <button className="mt-3 w-full bg-[#1A4158] text-white py-2 rounded hover:bg-[#25516A] transition">
-          Book Now
+          Book Seats
         </button>
       </div>
     </div>
