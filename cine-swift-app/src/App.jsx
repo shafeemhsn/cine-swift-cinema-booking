@@ -3,6 +3,9 @@ import RootLayout from "./pages/Root";
 import MovieList from "./pages/MovieList";
 import SeatLayout from "./components/seat-layout/SeatLayout";
 
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -11,6 +14,8 @@ const router = createBrowserRouter([
       { index: true, element: <MovieList /> },
 
       { path: "seat-layout", element: <SeatLayout /> },
+      { path: "login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
     ],
   },
 ]);
