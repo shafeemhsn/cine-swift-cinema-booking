@@ -13,9 +13,15 @@ export class User implements IUser {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
   password: string;
+
+  @Column()
+  salt: string;
+
+  @Column()
+  role: string;
 }
