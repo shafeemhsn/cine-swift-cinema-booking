@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 // import routes from "./routes";
-// import { errorHandler } from "./middleware/errorHandler";
+import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -15,8 +15,8 @@ app.use(cors());
 
 // app.use(routes);
 
-// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-//   errorHandler(err, req, res, next);
-// });
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next);
+});
 
 export { app };
