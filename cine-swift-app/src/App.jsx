@@ -5,6 +5,7 @@ import SeatLayout from "./components/seat-layout/SeatLayout";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import AuthProvider from "./contexts/authContext";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,13 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </>
+  );
 }
 
 export default App;
