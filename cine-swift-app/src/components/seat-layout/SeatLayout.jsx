@@ -9,11 +9,16 @@ import { generateInitialSeats } from "./seatUtils";
 function SeatLayout() {
   const [seats, setSeats] = useState(() => generateInitialSeats());
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [bookingMode, setBookingMode] = useState("customer");
+  const [userRole, setUserRole] = useState("customer");
   const [groupSize, setGroupSize] = useState(0);
   const [ageRestriction, setAgeRestriction] = useState(false);
   const [seniorFlexible, setSeniorFlexible] = useState(false);
   const [isVip, setVip] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(true);
+
+  useEffect(() => {
+    setShowBookingModal(true);
+  }, []);
 
   useEffect(() => {
     setSelectedSeats([]);
@@ -200,10 +205,33 @@ function SeatLayout() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">CO Number</h1>
+      {showBookingModal && userRole !== "admin" && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white/90 rounded-lg shadow-2xl backdrop-blur-md w-full max-w-md p-6 border border-gray-300">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Book Seats</h2>
+            </div>
+            <BookingForm
+              groupSize={groupSize}
+              setGroupSize={setGroupSize}
+              ageRestriction={ageRestriction}
+              setAgeRestriction={setAgeRestriction}
+              seniorFlexible={seniorFlexible}
+              setSeniorFlexible={setSeniorFlexible}
+              isVip={isVip}
+              setVip={setVip}
+              setShowBookingModal={setShowBookingModal}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-3/4">
+        <div
+          className={`w-full ${
+            userRole === "admin" ? "md:w-3/4" : "md:w-full"
+          }`}
+        >
           <div className="bg-gray-900 p-4 rounded-lg mb-4">
             <div className="w-full bg-gray-800 h-10 mb-8 rounded flex items-center justify-center text-white">
               Screen
@@ -216,57 +244,44 @@ function SeatLayout() {
           </div>
 
           <SeatLegend />
-        </div>
 
-        <div className="w-full md:w-1/4">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold mb-2">Booking Mode</h2>
-            <div className="flex gap-2">
-              <button
-                className={`px-4 py-2 rounded ${
-                  bookingMode === "customer"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-                onClick={() => setBookingMode("customer")}
-              >
-                Customer
-              </button>
-              <button
-                className={`px-4 py-2 rounded ${
-                  bookingMode === "admin"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-                onClick={() => setBookingMode("admin")}
-              >
-                Admin
-              </button>
-            </div>
+          <div className="mt-4 flex flex-col items-center space-y-2">
+            {/* Selected Seats Display */}
+            <p className="text-gray-700 font-medium">
+              Selected Seats:{" "}
+              {selectedSeats.length > 0
+                ? selectedSeats
+                    .map((id) => {
+                      const [row, col] = id.split("-");
+                      return `${row}${col}`;
+                    })
+                    .join(", ")
+                : "None"}
+            </p>
+
+            {/* Confirm Button */}
+            <button
+              className={`px-6 py-2 rounded font-semibold ${
+                selectedSeats.length > 0
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-gray-300 cursor-not-allowed text-gray-500"
+              }`}
+              onClick={confirmBooking}
+              disabled={selectedSeats.length === 0}
+            >
+              Confirm Booking
+            </button>
           </div>
-
-          {bookingMode === "customer" ? (
-            <BookingForm
-              groupSize={groupSize}
-              setGroupSize={setGroupSize}
-              selectedSeats={selectedSeats}
-              confirmBooking={confirmBooking}
-              ageRestriction={ageRestriction}
-              setAgeRestriction={setAgeRestriction}
-              seniorFlexible={seniorFlexible}
-              setSeniorFlexible={setSeniorFlexible}
-              isVip={isVip}
-              setVip={setVip}
-            />
-          ) : (
-            <AdminPanel
-              resetSeats={resetSeats}
-              seats={seats}
-              setSeats={setSeats}
-              selectedSeats={selectedSeats}
-            />
-          )}
         </div>
+
+        {userRole === "admin" && (
+          <AdminPanel
+            resetSeats={resetSeats}
+            seats={seats}
+            setSeats={setSeats}
+            selectedSeats={selectedSeats}
+          />
+        )}
       </div>
     </div>
   );
