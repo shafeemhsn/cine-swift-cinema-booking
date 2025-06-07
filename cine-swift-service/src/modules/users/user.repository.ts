@@ -1,6 +1,5 @@
 import { AppDataSource } from "../../config/postgres-db";
 import { User } from "./user.entity";
-import { IUser } from "./user.interface";
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -14,4 +13,10 @@ export const createUser = async (createUser: User): Promise<User> => {
     );
     throw error;
   }
+};
+
+export const getUserByEmail = async (email: string) => {
+  return userRepo.findOne({
+    where: { email },
+  });
 };
