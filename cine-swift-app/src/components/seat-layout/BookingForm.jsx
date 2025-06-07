@@ -1,18 +1,20 @@
 export const BookingForm = ({
   groupSize,
   setGroupSize,
-  selectedSeats,
-  confirmBooking,
   ageRestriction,
   setAgeRestriction,
   seniorFlexible,
   setSeniorFlexible,
   isVip,
   setVip,
+  setShowBookingModal,
 }) => {
+  const isProceedEnabled = isVip || groupSize > 0;
+
   return (
     <div className="bg-white p-4 rounded-lg shadow">
       <h2 className="text-xl font-bold mb-4">Book Seats</h2>
+
       <div className="mb-4">
         <label className="flex items-center">
           <input
@@ -73,30 +75,17 @@ export const BookingForm = ({
         </div>
       )}
 
-      <div className="mb-4">
-        <p>
-          Selected Seats:{" "}
-          {selectedSeats.length > 0
-            ? selectedSeats
-                .map((id) => {
-                  const seatObj = id.split("-");
-                  return `${seatObj[0]}${seatObj[1]}`;
-                })
-                .join(", ")
-            : "None"}
-        </p>
-      </div>
-
+      {/* Proceed Button */}
       <button
-        className={`w-full py-2 rounded ${
-          selectedSeats.length > 0
+        className={`w-full py-2 rounded mt-4 font-semibold ${
+          isProceedEnabled
             ? "bg-blue-500 text-white hover:bg-blue-600"
-            : "bg-gray-300 cursor-not-allowed"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
-        onClick={confirmBooking}
-        disabled={selectedSeats.length === 0}
+        onClick={() => setShowBookingModal(false)}
+        disabled={!isProceedEnabled}
       >
-        Confirm Booking
+        Proceed to Seat Selection
       </button>
     </div>
   );
