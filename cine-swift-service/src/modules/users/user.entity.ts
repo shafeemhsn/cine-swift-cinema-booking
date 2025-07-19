@@ -20,10 +20,10 @@ export class User implements IUser {
   @Column()
   password: string;
 
-  @Column()
+  @Column({nullable: true})
   salt: string;
 
-  @Column()
+  @Column({nullable: true})
   role: string;
 
   async validatePassword(password: string): Promise<boolean> {
