@@ -1,4 +1,4 @@
-export const SeatMap = ({ seats, selectedSeats, onSeatClick }) => {
+export const SeatMap = ({ seats, selectedSeats, onSeatClick, userRole }) => {
   // Group seats by row
   const seatsByRow = {};
   seats.forEach((seat) => {
@@ -20,7 +20,7 @@ export const SeatMap = ({ seats, selectedSeats, onSeatClick }) => {
               .map((seat) => {
                 let bgColor = "bg-gray-300"; // Available
 
-                if (selectedSeats.includes(seat.id)) {
+                if (selectedSeats.includes(seat.seatId)) {
                   bgColor = "bg-blue-500"; // Selected
                 } else if (seat.status === "booked") {
                   bgColor = "bg-red-500"; // Booked
@@ -37,18 +37,33 @@ export const SeatMap = ({ seats, selectedSeats, onSeatClick }) => {
                   bgColor = "bg-yellow-500"; // No children
                 }
 
-                return (
+                return userRole === "customer" ? (
                   <button
                     key={seat.id}
                     className={`w-8 h-8 ${bgColor} rounded flex items-center justify-center text-xs font-medium ${
                       seat.status === "available"
                         ? "hover:opacity-80"
-                        : "cursor-not-allowed opacity-70"
+                        : userRole === "customer"
+                        ? "cursor-not-allowed opacity-70"
+                        : ""
                     }`}
                     onClick={() => {
-                      if (seat.status === "available") onSeatClick(seat.id);
+                      if (seat.status === "available") onSeatClick(seat.seatId);
                     }}
                     disabled={seat.status !== "available"}
+                    title={`${row}${seat.column} - ${seat.type} ${
+                      seat.noChildren ? "(No Children)" : ""
+                    }`}
+                  >
+                    {seat.column}
+                  </button>
+                ) : (
+                  <button
+                    key={seat.id}
+                    className={`w-8 h-8 ${bgColor} rounded flex items-center justify-center text-xs font-medium hover:opacity-80`}
+                    onClick={() => {
+                      onSeatClick(seat.seatId);
+                    }}
                     title={`${row}${seat.column} - ${seat.type} ${
                       seat.noChildren ? "(No Children)" : ""
                     }`}

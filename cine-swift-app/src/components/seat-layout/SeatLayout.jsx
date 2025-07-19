@@ -4,17 +4,25 @@ import { SeatMap } from "./SeatMap";
 import { BookingForm } from "./BookingForm";
 import { AdminPanel } from "./AdminPanel";
 import { SeatLegend } from "./SeatLegend,";
-import { generateInitialSeats } from "./seatUtils";
+import { getSeats } from "../../utils/api/seats/seat.service";
 
 function SeatLayout() {
-  const [seats, setSeats] = useState(() => generateInitialSeats());
+  const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [userRole, setUserRole] = useState("customer");
+  const [userRole, setUserRole] = useState("admin");
   const [groupSize, setGroupSize] = useState(0);
   const [ageRestriction, setAgeRestriction] = useState(false);
   const [seniorFlexible, setSeniorFlexible] = useState(false);
   const [isVip, setVip] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(true);
+
+  useEffect(() => {
+    const fetchSeats = async () => {
+      const seatData = await getSeats();
+      setSeats(seatData);
+    };
+    fetchSeats();
+  }, []);
 
   useEffect(() => {
     setShowBookingModal(true);
@@ -29,7 +37,11 @@ function SeatLayout() {
   }, [isVip]);
 
   const toggleSeatSelection = (seatId) => {
-    const selectedSeat = seats.find((seat) => seat.id === seatId);
+    const selectedSeat = seats.find((seat) => seat.seatId === seatId);
+
+    if (userRole === "admin") {
+      adminSelection(selectedSeat);
+    }
 
     if (isVip) {
       vipSelection(selectedSeat);
@@ -49,7 +61,7 @@ function SeatLayout() {
 
       // Senior flexible seating override
       if (seniorFlexible) {
-        setSelectedSeats([selectedSeat.id]);
+        setSelectedSeats([selectedSeat.seatId]);
         return;
       }
 
@@ -61,7 +73,7 @@ function SeatLayout() {
 
       if (isValidSelection.length === 1) {
         // Clear previous selection and add the new seat
-        setSelectedSeats([isValidSelection[0].id]);
+        setSelectedSeats([isValidSelection[0].seatId]);
       }
     }
 
@@ -75,18 +87,23 @@ function SeatLayout() {
       );
       if (groupSize === selectedSeats.length) {
         // Clear previous selection and add the new seat if the group size has reached the limit
-        setSelectedSeats([...autoSelectedSeats.map((seat) => seat.id)]);
+        setSelectedSeats([...autoSelectedSeats.map((seat) => seat.seatId)]);
       } else {
         setSelectedSeats((prev) => [
           ...prev,
-          ...autoSelectedSeats.map((seat) => seat.id),
+          ...autoSelectedSeats.map((seat) => seat.seatId),
         ]);
       }
     }
   };
 
+  const adminSelection = (selectedSeat) => {
+    setSelectedSeats((prev) => [...prev, selectedSeat.seatId]);
+    return;
+  };
+
   const vipSelection = (selectedSeat) => {
-    setSelectedSeats((prev) => [...prev, selectedSeat.id]);
+    setSelectedSeats((prev) => [...prev, selectedSeat.seatId]);
     return;
   };
 
@@ -114,7 +131,7 @@ function SeatLayout() {
       .sort((a, b) => a.column - b.column);
 
     const selectedIndex = rowSeats.findIndex(
-      (seat) => seat.id === selectedSeat.id
+      (seat) => seat.seatId === selectedSeat.seatId
     );
     const firstSeat = rowSeats[0];
     const lastSeat = rowSeats[rowSeats.length - 1];
@@ -127,7 +144,10 @@ function SeatLayout() {
 
     if (selectedSeat.status === "available") {
       // Case 1: If the selected seat is the first or last seat in the row, allow it
-      if (selectedSeat.id === firstSeat.id || selectedSeat.id === lastSeat.id) {
+      if (
+        selectedSeat.seatId === firstSeat.seatId ||
+        selectedSeat.seatId === lastSeat.seatId
+      ) {
         return [selectedSeat];
 
         // Case 2: If the seat is isolated (previous or next seat is not available), allow it
@@ -166,7 +186,9 @@ function SeatLayout() {
       .sort((a, b) => a.column - b.column);
 
     // Find index of selected seat in sorted row
-    const startIndex = rowSeats.findIndex((s) => s.id === selectedSeat.id);
+    const startIndex = rowSeats.findIndex(
+      (s) => s.seatId === selectedSeat.seatId
+    );
     if (startIndex === -1) return [];
 
     const result = [rowSeats[startIndex]];
@@ -192,14 +214,17 @@ function SeatLayout() {
 
     setSeats((prev) =>
       prev.map((seat) =>
-        selectedSeats.includes(seat.id) ? { ...seat, status: "booked" } : seat
+        selectedSeats.includes(seat.seatId)
+          ? { ...seat, status: "booked" }
+          : seat
       )
     );
     setSelectedSeats([]);
   };
 
-  const resetSeats = () => {
-    setSeats(generateInitialSeats());
+  const resetSeats = async () => {
+    const data = await getSeats();
+    setSeats(data);
     setSelectedSeats([]);
   };
 
@@ -240,6 +265,7 @@ function SeatLayout() {
               seats={seats}
               selectedSeats={selectedSeats}
               onSeatClick={toggleSeatSelection}
+              userRole={userRole}
             />
           </div>
 
@@ -251,8 +277,8 @@ function SeatLayout() {
               Selected Seats:{" "}
               {selectedSeats.length > 0
                 ? selectedSeats
-                    .map((id) => {
-                      const [row, col] = id.split("-");
+                    .map((seatId) => {
+                      const [row, col] = seatId.split("-");
                       return `${row}${col}`;
                     })
                     .join(", ")

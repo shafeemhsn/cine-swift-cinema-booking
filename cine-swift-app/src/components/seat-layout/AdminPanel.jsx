@@ -8,7 +8,9 @@ export const AdminPanel = ({ resetSeats, seats, setSeats, selectedSeats }) => {
 
     setSeats((prev) =>
       prev.map((seat) =>
-        selectedSeats.includes(seat.id) ? { ...seat, status: seatStatus } : seat
+        selectedSeats.includes(seat.seatId)
+          ? { ...seat, status: seatStatus }
+          : seat
       )
     );
   };
@@ -22,13 +24,13 @@ export const AdminPanel = ({ resetSeats, seats, setSeats, selectedSeats }) => {
       if (availableSeats.length === 0) break;
 
       const randomIndex = Math.floor(Math.random() * availableSeats.length);
-      randomSeats.push(availableSeats[randomIndex].id);
+      randomSeats.push(availableSeats[randomIndex].seatId);
       availableSeats.splice(randomIndex, 1);
     }
 
     setSeats((prev) =>
       prev.map((seat) =>
-        randomSeats.includes(seat.id)
+        randomSeats.includes(seat.seatId)
           ? { ...seat, status: "unavailable" }
           : seat
       )
@@ -40,7 +42,7 @@ export const AdminPanel = ({ resetSeats, seats, setSeats, selectedSeats }) => {
 
     setSeats((prev) =>
       prev.map((seat) =>
-        selectedSeats.includes(seat.id)
+        selectedSeats.includes(seat.seatId)
           ? { ...seat, status: "available" }
           : seat
       )
