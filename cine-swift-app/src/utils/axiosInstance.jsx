@@ -1,45 +1,45 @@
 import axios from "axios";
 
-export const authApi = axios.create({
+// export const authApi = axios.create({
+//   baseURL: "http://localhost:3000",
+//   timeout: 10_000,
+// });
+
+export const api = axios.create({
   baseURL: "http://localhost:3000",
   timeout: 10_000,
 });
 
-const api = axios.create({
-  baseURL: "http://localhost:3000",
-  timeout: 10_000,
-});
+// api.interceptors.request.use((config) => {
+//   const token = sessionStorage.getItem("accessToken");
 
-api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("accessToken");
+//   if (
+//     token &&
+//     config.url !== "/auth/login" &&
+//     config.url !== "/auth/register"
+//   ) {
+//     config.headers["Authorization"] = `Bearer ${token}`;
+//   }
 
-  if (
-    token &&
-    config.url !== "/auth/login" &&
-    config.url !== "/auth/register"
-  ) {
-    config.headers["Authorization"] = `Bearer ${token}`;
-  }
+//   return config;
+// });
 
-  return config;
-});
+// api.interceptors.response.use(
+//   (res) => res,
+//   (err) => {
+//     const ignoredPaths = ["/auth/login", "/auth/register"];
+//     const requestUrl = err.config?.url || "";
 
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    const ignoredPaths = ["/auth/login", "/auth/register"];
-    const requestUrl = err.config?.url || "";
+//     const shouldIgnore = ignoredPaths.some((path) => requestUrl.includes(path));
 
-    const shouldIgnore = ignoredPaths.some((path) => requestUrl.includes(path));
+//     if (!shouldIgnore && err.response?.status === 401) {
+//       sessionStorage.removeItem("accessToken");
+//       sessionStorage.removeItem("user");
+//       window.location.href = "/";
+//     }
 
-    if (!shouldIgnore && err.response?.status === 401) {
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("user");
-      window.location.href = "/";
-    }
-
-    return Promise.reject(err);
-  }
-);
+//     return Promise.reject(err);
+//   }
+// );
 
 export default api;
