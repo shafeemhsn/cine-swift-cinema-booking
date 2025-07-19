@@ -1,9 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import {
-  configureSeat,
-  generateInitialSeats,
-  getSeatConfig,
-} from "./seat.service";
+import { configureSeat, getAllSeats } from "./seat.service";
 
 const router = Router();
 
@@ -13,23 +9,8 @@ router.get(
     console.log("GET seats/get-seats called");
 
     try {
-      const seats = generateInitialSeats();
+      const seats = await getAllSeats();
       res.status(201).json(seats);
-    } catch (error: any) {
-      console.error(`get-seats error: ${error.message}`);
-      next(error);
-    }
-  }
-);
-
-router.get(
-  "/get-all-seat-config",
-  async (req: Request, res: Response, next: NextFunction) => {
-    console.log("GET seats/get-all-seat-config called");
-
-    try {
-      const data = await getSeatConfig();
-      res.status(201).json(data);
     } catch (error: any) {
       console.error(`get-seats error: ${error.message}`);
       next(error);

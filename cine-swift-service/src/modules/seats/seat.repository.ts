@@ -22,8 +22,6 @@ export const createSeatConfig = async (
 
 export const getAllSeatConfig = async (): Promise<SeatConfig[]> => {
   try {
-    console.info(`Get SeatConfig for cinemaId = 'C001'`);
-
     return await seatConfigRepo.find({
       where: {
         cinemaId: "C001",

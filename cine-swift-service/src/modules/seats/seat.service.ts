@@ -19,20 +19,20 @@ export const configureSeat = async (newData: ISeat) => {
   }
 };
 
-export const getSeatConfig = async () => {
-  try {
-    const result = await getAllSeatConfig();
-    if (!result) {
-      throw new HttpException(500, {
-        message: `Error occurred when retrieving seat config`,
-        result: false,
-      });
-    }
+export const getAllSeats = async () => {
+  const configData = await getAllSeatConfig();
+  const seats: ISeat[] = generateInitialSeats();
 
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  seats.forEach((seat) => {
+    const config = configData.find((c) => c.seatId === seat.seatId);
+    if (config) {
+      if (config.status !== null) seat.status = config.status;
+      if (config.type !== null) seat.type = config.type;
+      if (config.noChildren !== null) seat.noChildren = config.noChildren;
+    }
+  });
+
+  return seats;
 };
 
 export const generateInitialSeats = () => {
@@ -53,24 +53,6 @@ export const generateInitialSeats = () => {
       // Determine seat type
       let type = "standard";
       let noChildren = false;
-
-      // VIP seats (middle rows, center seats)
-      if ((row === "D" || row === "E") && col >= 5 && col <= 12) {
-        type = "vip";
-      }
-
-      // Accessible seats (front row ends and back row ends)
-      if (
-        (row === "A" || row === "J") &&
-        (col <= 2 || col >= seatsPerRow - 1)
-      ) {
-        type = "accessible";
-      }
-
-      // No children rows (back two rows)
-      if (row === "I" || row === "J") {
-        noChildren = true;
-      }
 
       seats.push({
         seatId,
