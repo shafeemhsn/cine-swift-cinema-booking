@@ -1,4 +1,6 @@
 import HttpException from "../../util/http-exception.model";
+import { IBooking } from "../booking/booking.interface";
+import { findAllBooking } from "../booking/booking.repository";
 
 import { ISeat } from "./seat.interface";
 import { createSeatConfig, getAllSeatConfig } from "./seat.repository";
@@ -22,6 +24,7 @@ export const configureSeat = async (newData: ISeat) => {
 export const getAllSeats = async () => {
   const configData = await getAllSeatConfig();
   const seats: ISeat[] = generateInitialSeats();
+  const bookings: IBooking[] = await findAllBooking();
 
   seats.forEach((seat) => {
     const config = configData.find((c) => c.seatId === seat.seatId);
@@ -29,6 +32,14 @@ export const getAllSeats = async () => {
       if (config.status !== null) seat.status = config.status;
       if (config.type !== null) seat.type = config.type;
       if (config.noChildren !== null) seat.noChildren = config.noChildren;
+    }
+  });
+
+  // Override seat status if there is a booking
+  seats.forEach((seat) => {
+    const booking = bookings.find((b) => b.seatId === seat.seatId);
+    if (booking && booking.status !== null) {
+      seat.status = booking.status;
     }
   });
 
