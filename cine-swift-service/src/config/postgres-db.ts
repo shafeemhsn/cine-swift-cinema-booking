@@ -5,6 +5,7 @@ import { User } from "../modules/users/user.entity";
 
 import dotenv from "dotenv";
 import { SeatConfig } from "../modules/seats/seatConfig.entity";
+import { Bookings } from "../modules/booking/booking.entity";
 
 dotenv.config();
 
@@ -17,5 +18,5 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: false,
-  entities: [User, SeatConfig],
+  entities: [User, SeatConfig, Bookings],
 });
