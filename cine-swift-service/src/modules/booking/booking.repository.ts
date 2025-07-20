@@ -19,3 +19,16 @@ export const createBooking = async (
     throw error;
   }
 };
+
+export const findAllBooking = async (): Promise<Bookings[]> => {
+  try {
+    return await bookingRepo.find({
+      where: {
+        cinemaId: "C001",
+      },
+    });
+  } catch (error: any) {
+    console.error(`Error retrieving getAllBooking, error: ${error.message}`);
+    throw error;
+  }
+};

@@ -1,7 +1,22 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { newBooking } from "./booking.service";
+import { getAllBookings, newBooking } from "./booking.service";
 
 const router = Router();
+
+router.get(
+  "/get-all-bookings",
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("GET booking/get-all-bookings called");
+
+    try {
+      const seats = await getAllBookings();
+      res.status(201).json(seats);
+    } catch (error: any) {
+      console.error(`get-all-bookings error: ${error.message}`);
+      next(error);
+    }
+  }
+);
 
 router.post(
   "/create-booking",
