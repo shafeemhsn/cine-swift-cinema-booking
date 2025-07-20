@@ -28,7 +28,7 @@ export const findAllBooking = async (): Promise<Bookings[]> => {
       },
     });
   } catch (error: any) {
-    console.error(`Error retrieving getAllBooking, error: ${error.message}`);
+    console.error(`Error retrieving findAllBooking, error: ${error.message}`);
     throw error;
   }
 };
