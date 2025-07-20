@@ -78,6 +78,7 @@ function AuthProvider({ children }) {
     logout,
     register,
     setUser,
+    userRole: user?.role,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
