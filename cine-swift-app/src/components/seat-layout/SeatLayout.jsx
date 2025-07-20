@@ -1,26 +1,32 @@
 import { useState, useEffect } from "react";
 
+import { useAuth } from "../../contexts/authContext";
 import { SeatMap } from "./SeatMap";
 import { BookingForm } from "./BookingForm";
 import { AdminPanel } from "./AdminPanel";
 import { SeatLegend } from "./SeatLegend,";
 import { getSeats } from "../../utils/api/seats/seat.service";
+import { createBooking } from "../../utils/api/booking/booking.service";
 
 function SeatLayout() {
+  const { user } = useAuth();
+  const userRole = user?.role;
+
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [userRole, setUserRole] = useState("admin");
+  // const [userRole, setUserRole] = useState("customer");
   const [groupSize, setGroupSize] = useState(0);
   const [ageRestriction, setAgeRestriction] = useState(false);
   const [seniorFlexible, setSeniorFlexible] = useState(false);
   const [isVip, setVip] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(true);
 
+  const fetchSeats = async () => {
+    const seatData = await getSeats();
+    setSeats(seatData);
+  };
+
   useEffect(() => {
-    const fetchSeats = async () => {
-      const seatData = await getSeats();
-      setSeats(seatData);
-    };
     fetchSeats();
   }, []);
 
@@ -209,17 +215,29 @@ function SeatLayout() {
     return result;
   };
 
-  const confirmBooking = () => {
+  const confirmBooking = async () => {
     if (selectedSeats.length === 0) return;
 
-    setSeats((prev) =>
-      prev.map((seat) =>
-        selectedSeats.includes(seat.seatId)
-          ? { ...seat, status: "booked" }
-          : seat
-      )
-    );
+    for (const seatId of selectedSeats) {
+      const bookingData = {
+        bookingId: `B${Date.now()}`,
+        userId: "shafeem",
+        showtimeId: "25062516",
+        cinemaId: "C001",
+        seatId,
+        totalAmount: 4500,
+        status: "booked",
+      };
+
+      try {
+        await createBooking(bookingData);
+      } catch (err) {
+        console.error("Booking failed for seat:", seatId, err);
+      }
+    }
+
     setSelectedSeats([]);
+    await fetchSeats();
   };
 
   const resetSeats = async () => {
@@ -286,24 +304,26 @@ function SeatLayout() {
             </p>
 
             {/* Confirm Button */}
-            <button
-              className={`px-6 py-2 rounded font-semibold ${
-                selectedSeats.length > 0
-                  ? "bg-blue-500 text-white hover:bg-blue-600"
-                  : "bg-gray-300 cursor-not-allowed text-gray-500"
-              }`}
-              onClick={confirmBooking}
-              disabled={selectedSeats.length === 0}
-            >
-              Confirm Booking
-            </button>
+            {userRole !== "admin" && (
+              <button
+                className={`px-6 py-2 rounded font-semibold ${
+                  selectedSeats.length > 0
+                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    : "bg-gray-300 cursor-not-allowed text-gray-500"
+                }`}
+                onClick={confirmBooking}
+                disabled={selectedSeats.length === 0}
+              >
+                Confirm Booking
+              </button>
+            )}
           </div>
         </div>
 
         {userRole === "admin" && (
           <AdminPanel
             resetSeats={resetSeats}
-            seats={seats}
+            // seats={seats}
             setSeats={setSeats}
             selectedSeats={selectedSeats}
           />

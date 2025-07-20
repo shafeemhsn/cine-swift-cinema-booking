@@ -55,7 +55,7 @@ export const BookingForm = ({
                 onChange={() => setAgeRestriction(!ageRestriction)}
                 className="mr-2"
               />
-              No children in party
+              Children in the group?
             </label>
           </div>
 
